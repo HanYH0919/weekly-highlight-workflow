@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+installation.local.json
+config.local.json
+.weekly-highlights/
+validation/
+*.private.json
+*.token
+.env
