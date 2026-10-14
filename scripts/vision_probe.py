@@ -64,14 +64,14 @@ def make(config, output):
         panel = Image.new('RGB', (480, 340), '#f8f8f8'); d = ImageDraw.Draw(panel)
         d.text((15, 20), 'Weekly Highlights', fill='black', font=font(27))
         if condition == 'clipped':
-            d.text((15, 110), 'Particle concentration measurement', fill='black', font=font(38))
-            d.text((15, 320), 'Abstract: aerosol formation', fill='black', font=font(31))
+            d.text((15, 110), 'Research measurement details', fill='black', font=font(38))
+            d.text((15, 320), 'Abstract: research findings', fill='black', font=font(31))
         elif condition == 'overlap':
-            d.text((15, 110), 'Summary: particle growth', fill='black', font=font(30))
-            d.text((15, 119), 'Abstract: aerosol chemistry', fill='black', font=font(30))
+            d.text((15, 110), 'Summary: research results', fill='black', font=font(30))
+            d.text((15, 119), 'Abstract: research evidence', fill='black', font=font(30))
         else:
-            d.text((15, 105), 'Summary: particle growth', fill='black', font=font(28))
-            d.text((15, 165), 'Abstract: aerosol chemistry', fill='black', font=font(28))
+            d.text((15, 105), 'Summary: research results', fill='black', font=font(28))
+            d.text((15, 165), 'Abstract: research evidence', fill='black', font=font(28))
         board.paste(panel, (x + 20, y + 90))
     board.save(output / 'layout-check.png')
     inputs = [{'path': str(output / name), 'sha256': file_hash(output / name)} for name in ['input-check.png', 'layout-check.png']]

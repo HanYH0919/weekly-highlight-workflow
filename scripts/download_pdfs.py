@@ -44,12 +44,14 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--config', type=Path)
     p.add_argument('--approved', type=Path, required=True)
-    p.add_argument('--journal', choices=['ACP', 'PNAS'], required=True)
+    p.add_argument('--journal', required=True, help='Selected journal ID')
     p.add_argument('--base-dir', type=Path, required=True)
     p.add_argument('--evidence', type=Path, help='Optional verified metadata evidence containing PDF URLs; cannot change approved identity')
     args = p.parse_args()
     config = load_config(args.config)
-    data = checked_review(args.approved, True)
+    data = checked_review(args.approved, True, config)
+    if args.journal not in config['journals']:
+        raise ValueError('Journal was not selected in local configuration')
     from weekly_common import execution_records
     records = execution_records(data, args.journal, args.evidence)
     if not records:

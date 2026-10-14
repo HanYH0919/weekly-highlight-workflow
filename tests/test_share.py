@@ -38,7 +38,7 @@ class ShareTests(unittest.TestCase):
             'actual_model':'test-vision', 'delivery':{'image_input_confirmed':True,'image_tool_evidence':['SYNTHETIC image1','SYNTHETIC image2']}}
 
     def test_unconfigured_or_untested_setup_blocks_runtime(self):
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises((RuntimeError, ValueError)):
             load_config(self.config_path)
         self.assertEqual(load_config(self.config_path, require_ready=False)['setup']['status'], 'vision_pending')
 
@@ -74,7 +74,7 @@ class ShareTests(unittest.TestCase):
         with self.assertRaises(ValueError): verify_capability(self.config)
 
     def test_new_empty_library_has_real_first_period(self):
-        source = self.base/'ACP.docx'; doc=Document(); doc.add_paragraph('weekly highlights-ACP'); doc.save(source)
+        source = self.base/'JournalOne.docx'; doc=Document(); doc.add_paragraph('weekly highlights-Journal One'); doc.save(source)
         raw='SYNTHETIC TEST ONLY. Particle count 10<sup>6</sup> m<sup>-3</sup>. Not a scientific result.'
         records=[{'doi':'10.9999/test(only)','title':'SYNTHETIC SOFTWARE TEST','authors':['Test, Alice'],
                   'authors_verified':True,'authors_source_url':'https://example.org/test','abstract_html':raw,'abstract':plain_text(raw),'summary':'合成软件测试，不是真实论文。'}]

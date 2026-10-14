@@ -208,12 +208,14 @@ def load_config(path=None, require_ready=True):
     root = Path(config['workspace_root']).resolve()
     if not root.is_dir():
         raise FileNotFoundError(f'Workspace unavailable: {root}')
-    if set(config['journals']) != {'ACP', 'PNAS'}:
-        raise ValueError('Config must define ACP and PNAS')
+    if not isinstance(config.get('journals'), dict):
+        raise ValueError('Journal paths must be a mapping')
     config['workspace_root'] = str(root)
     config['paths'] = {j: str(within(root, p)) for j, p in config['journals'].items()}
     config['_config_path'] = str(Path(path).resolve())
     if require_ready:
+        from selection import validate_selection
+        validate_selection(config)
         from vision_probe import verify_capability
         if config.get('setup', {}).get('status') != 'ready':
             raise RuntimeError('VISION_CHECK_REQUIRED: finish the actual image test during setup; do not assume model vision from its name')

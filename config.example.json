@@ -1,10 +1,12 @@
 {
-  "version": "1.01",
+  "version": "1.11",
   "workspace_root": "CHOOSE_DURING_SETUP",
   "timezone": "Asia/Shanghai",
   "window_days": 10,
   "screening_profile": ".weekly-highlights/screening-profile.md",
-  "journals": {"ACP": "Reading/WeeklyHighlight/ACP/ACP.docx", "PNAS": "Reading/WeeklyHighlight/PNAS/PNAS.docx"},
+  "journals": {},
+  "journal_profiles": {},
+  "research_scope": {"mode": "unconfigured", "topics": [], "exclude": [], "criteria": "", "evidence_urls": []},
   "execution": {"preferred_model": "CHOOSE_FROM_YOUR_AGENT", "review_model": "CHOOSE_FROM_YOUR_AGENT", "provider": "HOST_MANAGED", "host": "CHOOSE_DURING_SETUP", "host_version": "", "max_workers": 4, "timeout_seconds": 30, "retries": 2},
   "render": {"soffice": "", "pdftoppm": ""},
   "setup": {"status": "configuration_required", "history_mode": "existing"}

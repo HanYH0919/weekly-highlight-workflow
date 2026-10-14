@@ -1,4 +1,4 @@
 interface:
-  display_name: "Weekly Highlights 1.01"
-  short_description: "可配置路径、实测视觉模型、首版前去重的ACP/PNAS分享工作流"
-  default_prompt: "Use $weekly-highlight-workflow；首次使用先配置我的数据目录和可用模型，实际校验小模型图片输入与页面识别能力。配置完成后筛选近10天ACP/PNAS，首版前完成历史及跨版本去重，确认后下载并更新Word。"
+  display_name: "Weekly Highlights 1.11"
+  short_description: "自选期刊与领域、首版前去重、实测视觉模型的通用文献周报"
+  default_prompt: "Use $weekly-highlight-workflow；先配置我的期刊和领域，也可按我给的期刊读取官方范围后筛选，实测视觉模型，首版前去重，审核后下载并更新Word。"

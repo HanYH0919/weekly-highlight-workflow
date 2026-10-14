@@ -88,7 +88,7 @@ def main():
         if backup and not destination.exists():
             shutil.move(str(backup), str(destination))
         raise
-    print(json.dumps({'installed_path': str(destination), 'version': '1.01', 'backup': str(backup) if backup else None,
+    print(json.dumps({'installed_path': str(destination), 'version': '1.11', 'backup': str(backup) if backup else None,
                       'status': 'files_installed_configuration_or_vision_check_required',
                       'next': 'Read START_HERE.md and run setup_share.py configure; file import alone does not validate models'},ensure_ascii=False))
 

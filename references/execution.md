@@ -10,17 +10,17 @@
 python scripts/weekly.py --config <本地配置> preflight
 python scripts/weekly.py --config <本地配置> prepare-review --records <records.json> --out-dir <新审核目录>
 python scripts/weekly.py --config <本地配置> approve --review <review.json> --confirmation "实际用户授权" --output <approved.json>
-python scripts/weekly.py --config <本地配置> metadata --approved <approved.json> --journal ACP --evidence <核验补充.json> --output <metadata.json>
-python scripts/download_pdfs.py --config <本地配置> --approved <approved.json> --journal ACP --base-dir <配置对应期刊/yyMMdd>
+python scripts/weekly.py --config <本地配置> metadata --approved <approved.json> --journal <所选期刊ID> --evidence <核验补充.json> --output <metadata.json>
+python scripts/download_pdfs.py --config <本地配置> --approved <approved.json> --journal <所选期刊ID> --base-dir <配置对应期刊/yyMMdd>
 python scripts/update_weekly_docx.py --source <历史Word> --metadata <metadata.json> --date <YYYY.M.D> --output <全新候选.docx>
 python scripts/validate_weekly_docx.py --docx <候选.docx> --metadata <metadata.json> --date <YYYY.M.D> --old-docx <历史Word>
 python scripts/render_review.py render --config <本地配置> --docx <候选.docx> --output-dir <新渲染目录> --environment-id <渲染器字体环境标识>
 python scripts/render_review.py plan --current <render-manifest.json> --force-pages <新增和交界页编号> --output <plan.json>
 python scripts/render_review.py accept --config <本地配置> --plan <plan.json> --inspected <真正看过的页编号> --reviewer <实际视觉模型> --output <qa.json>
-python scripts/weekly.py --config <本地配置> install --approved <approved.json> --journal ACP --metadata <metadata.json> --candidate <候选.docx> --qa <qa.json>
+python scripts/weekly.py --config <本地配置> install --approved <approved.json> --journal <所选期刊ID> --metadata <metadata.json> --candidate <候选.docx> --qa <qa.json>
 ```
 
-PNAS同样处理，零新增不运行空块生成。跨期复用须有可信既有QA，同环境且页面像素完全相同；新增/交界/变化页仍实际打开，无法证明一致就检查。accept仅记录真实查看，不代替看图。报告目检X页、复用Y页，不虚报。
+对每个所选期刊同样处理，零新增不运行空块生成。跨期复用须有可信既有QA，同环境且页面像素完全相同；新增/交界/变化页仍实际打开，无法证明一致就检查。accept仅记录真实查看，不代替看图。报告目检X页、复用Y页，不虚报。
 
 默认install在工作区_archive保存验证备份再原子安装，不直接删除旧文件。若项目要求专用归档工具，先按该规则归档并传--archive-receipt（original_path、archived_path、sha256）。失败后若目标已被移走，核对归档后只恢复不存在的目标，不能覆盖其他任务的新文件。
 

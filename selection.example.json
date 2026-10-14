@@ -1,0 +1,20 @@
+{
+  "journals": {
+    "J1": "Reading/WeeklyHighlight/J1/J1.docx"
+  },
+  "journal_profiles": {
+    "J1": {
+      "name": "CHOOSE_YOUR_JOURNAL",
+      "source_urls": [],
+      "source_verified": false,
+      "include_preprints": false
+    }
+  },
+  "research_scope": {
+    "mode": "topics",
+    "topics": [],
+    "exclude": [],
+    "criteria": "",
+    "evidence_urls": []
+  }
+}

@@ -24,39 +24,28 @@ def parse_feed(blob, source_url):
     return rows
 
 
-def parse_acp_index(blob, source_url):
-    tree = html.fromstring(blob)
-    rows, seen = [], set()
-    # Bind DOI, title and href to one article-sized block, never scan adjacent records.
-    for anchor in tree.xpath('//a[@href]'):
-        href = urljoin(source_url, anchor.get('href'))
-        title = plain_text(' '.join(anchor.itertext()))
-        if not (re.search(r'/articles/\d+/\d+/\d{4}/?$', href) or re.search(r'/preprints/\d{4}/egusphere-[^/]+/?$', href)) or len(title) < 25:
-            continue
-        node = anchor
-        chosen = None
-        for _ in range(6):
-            if node is None:
-                break
-            links = {urljoin(source_url, x) for x in node.xpath('.//a/@href') if '/articles/' in x or '/preprints/' in x}
-            dois = {normalize_doi(m.group()) for m in DOI_RE.finditer(' '.join(node.itertext()))}
-            if len(links) <= 2 and len(dois) == 1:
-                chosen = (node, next(iter(dois)))
-                break
-            node = node.getparent()
-        if chosen is None:
-            # Retain unbound record for explicit verification rather than inventing a DOI.
-            chosen = (anchor, '')
-        node, doi = chosen
-        key = doi or href
-        if key in seen:
-            continue
-        seen.add(key)
-        rows.append({'title': title, 'doi': doi, 'landing_url': href,
-                     'index_source_url': source_url, 'index_context': plain_text(' '.join(node.itertext())),
-                     'date_verified': False, 'abstract_verified': False})
+def parse_index(blob, source_url, article_xpath, title_xpath='.//a[@href]', link_xpath='.//a[@href]/@href'):
+    if not article_xpath:
+        raise ValueError('Inspect the publisher index and supply --article-xpath; no journal-specific parser is assumed')
+    tree=html.fromstring(blob)
+    rows=[]
+    for block in tree.xpath(article_xpath):
+        if not isinstance(block,etree._Element):
+            raise ValueError('article-xpath must select article container elements')
+        titles=block.xpath(title_xpath);links=block.xpath(link_xpath)
+        if not titles or not links:
+            raise ValueError('Selected article block has no title/link; correct the selectors or use browser verification')
+        title=titles[0]
+        title=plain_text(' '.join(title.itertext()) if isinstance(title,etree._Element) else str(title))
+        link=links[0]
+        link=link.get('href','') if isinstance(link,etree._Element) else str(link)
+        context=plain_text(' '.join(block.itertext()))
+        dois={normalize_doi(m.group()) for m in DOI_RE.finditer(context)}
+        rows.append({'title':title,'doi':next(iter(dois)) if len(dois)==1 else '',
+                     'landing_url':urljoin(source_url,link),'index_source_url':source_url,
+                     'index_context':context,'date_verified':False,'abstract_verified':False})
     if not rows:
-        raise ValueError('No ACP article blocks found; inspect source instead of assuming no articles')
+        raise ValueError('No selected article blocks; do not treat a failed parser as zero articles')
     return rows
 
 
@@ -88,13 +77,17 @@ def parse_article(blob, source_url):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('mode', choices=['feed', 'acp-index', 'article'])
+    p.add_argument('mode', choices=['feed', 'index', 'article'])
     p.add_argument('--url', action='append', default=[], help='Explicit verified URL; repeat for known pages of one source')
     p.add_argument('--file', type=Path)
     p.add_argument('--source-url')
     p.add_argument('--cache-dir', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--refresh', action='store_true')
+    p.add_argument('--journal',help='Journal ID from selected local configuration')
+    p.add_argument('--article-xpath')
+    p.add_argument('--title-xpath',default='.//a[@href]')
+    p.add_argument('--link-xpath',default='.//a[@href]/@href')
     args = p.parse_args()
     sources = []
     if args.file:
@@ -105,12 +98,15 @@ def main():
         sources.append(fetch(url, args.cache_dir, refresh=args.refresh))
     if not sources:
         p.error('Provide --url or --file')
-    parser = {'feed': parse_feed, 'acp-index': parse_acp_index, 'article': parse_article}[args.mode]
+    parser = {'feed': parse_feed, 'index': lambda blob,url: parse_index(blob,url,args.article_xpath,args.title_xpath,args.link_xpath), 'article': parse_article}[args.mode]
     rows, provenance = [], []
     for blob, info in sources:
         result = parser(blob, info['final_url'])
         rows.extend(result if isinstance(result, list) else [result])
         provenance.append(info)
+    if args.journal:
+        for record in rows:
+            record['journal']=args.journal
     dump_json(args.output, {'mode': args.mode, 'sources': provenance, 'records': rows,
                             'coverage_complete': False, 'note': 'Agent must verify pagination, dates, full abstracts and source semantics'})
     print(json.dumps({'records': len(rows), 'output': str(args.output)}, ensure_ascii=False))

@@ -1,4 +1,4 @@
-name: Publish Weekly Highlights 1.01
+name: Publish Weekly Highlights 1.11
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: weekly-highlights-release-1.01
+  group: weekly-highlights-release-1.11
   cancel-in-progress: false
 
 jobs:
@@ -45,15 +45,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          test "$(tr -d '\r\n' < VERSION.txt)" = '1.01'
-          if gh release view v1.01 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo 'v1.01 already exists; refusing to replace a published version.'
+          test "$(tr -d '\r\n' < VERSION.txt)" = '1.11'
+          if gh release view v1.11 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo 'v1.11 already exists; refusing to replace a published version.'
             exit 1
           fi
-          gh release create v1.01 \
-            "$RUNNER_TEMP/weekly-highlight-release/weekly-highlight-workflow-1.01.zip" \
-            "$RUNNER_TEMP/weekly-highlight-release/weekly-highlight-workflow-1.01-workbuddy.zip" \
+          gh release create v1.11 \
+            "$RUNNER_TEMP/weekly-highlight-release/weekly-highlight-workflow-1.11.zip" \
+            "$RUNNER_TEMP/weekly-highlight-release/weekly-highlight-workflow-1.11-workbuddy.zip" \
             "$RUNNER_TEMP/weekly-highlight-release/SHA256SUMS.txt" \
             --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
-            --title 'Weekly Highlights 1.01' --notes-file .github/RELEASE_NOTES_1.01.md --draft
-          gh release edit v1.01 --repo "$GITHUB_REPOSITORY" --draft=false --latest
+            --title 'Weekly Highlights 1.11' --notes-file .github/RELEASE_NOTES_1.11.md --draft
+          gh release edit v1.11 --repo "$GITHUB_REPOSITORY" --draft=false --latest
